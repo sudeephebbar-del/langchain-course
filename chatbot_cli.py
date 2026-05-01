@@ -8,19 +8,16 @@ from langchain.agents import create_agent
 from langchain.tools import tool
 from langchain_core.messages import HumanMessage
 from langchain_ollama import ChatOllama
-from tavily import TavilyClient
+from langchain_openai import ChatOpenAI
+from langchain_tavily import TavilySearch
 
 
 def build_agent(*, model: str, temperature: float):
-    tavily = TavilyClient()
-
-    @tool
-    def search(query: str) -> str:
-        """Search the web using Tavily."""
-        return tavily.search(query=query)
+    tools = [TavilySearch()]
 
     llm = ChatOllama(temperature=temperature, model=model)
-    return create_agent(model=llm, tools=[search])
+    #llm = ChatOpenAI(model="gpt-5")
+    return create_agent(model=llm,  tools=tools)
 
 
 def main() -> int:
@@ -31,8 +28,6 @@ def main() -> int:
     parser.add_argument("--temperature", type=float, default=0.0, help="Sampling temperature")
     args = parser.parse_args()
 
-    print(f"LangSmith tracing: {os.getenv('LANGCHAIN_TRACING_V2')}")
-    print(f"LangSmith project: {os.getenv('LANGCHAIN_PROJECT')}")
     print("Type a message and press Enter. Type 'exit' or 'quit' to stop.\n")
 
     agent = build_agent(model=args.model, temperature=args.temperature)
