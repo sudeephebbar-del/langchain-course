@@ -10,7 +10,8 @@ load_dotenv()
 
 if __name__ == "__main__":
     print("Ingesting...")
-    loader = TextLoader("mediumblog1.txt")
+    doc_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mediumblog1.txt")
+    loader = TextLoader(doc_path, encoding="utf-8")
     document = loader.load()
 
     print("splitting...")
